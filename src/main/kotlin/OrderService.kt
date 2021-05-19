@@ -1,3 +1,4 @@
+import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 @OptIn(ExperimentalStdlibApi::class)
@@ -14,6 +15,7 @@ class OrderService(customerOrder: Array<String>) {
     private val order: MutableMap<String, Int> = mutableMapOf()
     private val mapOfCosts = mapOf("apple" to 0.6, "orange" to 0.25)
     private var total : Double = 0.0
+    private var notifications: CustomerNotificationService? = null
 
     init {
         // add the order items into the order array after formatting them correctly
@@ -69,6 +71,38 @@ class OrderService(customerOrder: Array<String>) {
     // want to put a deal on apples 3 for price of 2, I would use (# of apples, 3, 2) as the parameters
     private fun calculateDiscountQuantity(quantity: Int, numberToDiscount: Int, discountQuantity: Int): Int {
         return ((quantity / numberToDiscount) * discountQuantity) + (quantity % numberToDiscount)
+    }
+
+    // user input variable for testing purposes
+    fun placeOrder(userInput: String? = null) {
+        println(displayTotal())
+        print("Would you like to approve total and place order? (yes/no) ")
+
+        do {
+            val answer = userInput ?: readLine()
+            var invalid = false
+
+            when (answer) {
+                "yes", "Yes", "y", "Y" -> {
+                    notifications = CustomerNotificationService(OrderStatus.SUBMITTED)
+                    TimeUnit.SECONDS.sleep(45L)
+
+                    // simulate order out for delivery
+                    notifications!!.status = OrderStatus.DELIVERY
+                    TimeUnit.SECONDS.sleep(15L)
+
+                    // simulate order delivered
+                    notifications!!.status = OrderStatus.COMPLETE
+                }
+                "no", "No", "n", "N" -> {
+                    println("Your order has been canceled.")
+                }
+                "else" -> {
+                    invalid = true
+                    println("Command not recognized. Please enter \"yes\" or \"no\": ")
+                }
+            }
+        } while (invalid)
     }
 
 }

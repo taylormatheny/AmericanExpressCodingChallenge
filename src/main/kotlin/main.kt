@@ -7,5 +7,5 @@ fun main(args: Array<String>) {
     val order = OrderService(args)
 
     // display the total
-    order.displayTotal()
+    order.placeOrder()
 }
